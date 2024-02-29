@@ -1,30 +1,38 @@
+# Use Alpine 3.9 as base image
 FROM alpine:3.9
 
 # Add community repository for MongoDB
 RUN echo http://dl-cdn.alpinelinux.org/alpine/v3.9/community >> /etc/apk/repositories
 
-# Install MongoDB and necessary tools
+# Install MongoDB and Bash
 RUN apk add --no-cache mongodb=4.0.5-r0 bash
 
 # Create MongoDB data directory
 RUN mkdir -p /data/db
 
-# Expose port 27017
-EXPOSE 27017
+# Add a MongoDB user and group, then set ownership
+RUN addgroup -S mongodb && adduser -S mongodb -G mongodb \
+    && chown -R mongodb:mongodb /data/db /var/log/mongodb
 
 # Copy the entrypoint script to the container
 COPY entrypoint.sh /entrypoint.sh
 
-# Make the entrypoint script executable
-RUN chmod +x /entrypoint.sh
+# Make the entrypoint script executable and set ownership
+RUN chmod +x /entrypoint.sh && chown mongodb:mongodb /entrypoint.sh
 
 # Set environment variables
 ENV MONGO_INITDB_DATABASE=admin \
     MONGO_INITDB_ROOT_USERNAME=admin \
     MONGO_INITDB_ROOT_PASSWORD=password
 
+# Expose MongoDB default port
+EXPOSE 27017
+
+# Switch to the mongodb user
+USER mongodb
+
 # Use the entrypoint script to initialize MongoDB
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command to run MongoDB
-CMD ["mongod", "--bind_ip_all"]
+CMD ["mongod", "--bind_ip_all", "--auth"]
