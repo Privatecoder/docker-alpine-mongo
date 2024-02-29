@@ -10,9 +10,8 @@ RUN apk add --no-cache mongodb=4.0.5-r0 bash
 # Create MongoDB data directory
 RUN mkdir -p /data/db
 
-# Add a MongoDB user and group, then set ownership
-RUN addgroup -S mongodb && adduser -S mongodb -G mongodb \
-    && chown -R mongodb:mongodb /data/db /var/log/mongodb
+# Set ownership
+RUN chown -R mongodb:mongodb /data/db /var/log/mongodb
 
 # Copy the entrypoint script to the container
 COPY entrypoint.sh /entrypoint.sh
@@ -22,7 +21,7 @@ RUN chmod +x /entrypoint.sh && chown mongodb:mongodb /entrypoint.sh
 
 # Set environment variables
 ENV MONGO_INITDB_DATABASE=admin \
-    MONGO_INITDB_ROOT_USERNAME=admin \
+    MONGO_INITDB_ROOT_USERNAME=root \
     MONGO_INITDB_ROOT_PASSWORD=password
 
 # Expose MongoDB default port

@@ -23,6 +23,8 @@ if [ ! -f "$DATA_DIR/.mongodb_data_initialized" ]; then
     mongod --shutdown --dbpath $DATA_DIR
 
     echo "MongoDB data initialized."
+else
+  echo "MongoDB already initialized. Starting..."
 fi
 
 # Run MongoDB
