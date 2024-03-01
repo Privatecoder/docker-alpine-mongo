@@ -9,6 +9,7 @@ RUN apk add --no-cache mongodb=4.0.5-r0 bash
 
 # Create MongoDB data directory
 RUN mkdir -p /data/db
+RUN mkdir -p /var/log/mongodb
 
 # Set ownership
 RUN chown -R mongodb:mongodb /data/db /var/log/mongodb
